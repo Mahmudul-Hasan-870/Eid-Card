@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="bd">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="images/eid.png">
+    <title>ঈদ কার্ড -  আপনার ঈদ ভালো কাটুক আর আনন্দ ভরা হোক</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> <!-- Include SweetAlert library -->
+    <style>
+        /* Custom styles for the card */
+        @font-face {
+            font-family: 'Hind Siliguri';
+            src: url('https://fonts.gstatic.com/s/hindsiliguri/v7/ijwOs5juQtsyLLR5jN4cxBEoRDf44uE.ttf') format('truetype');
+        }
+
+        body {
+            font-family: 'Hind Siliguri', sans-serif;
+        }
+
+        .card {
+            max-width: 400px;
+            margin: 0 auto;
+            margin-top: 50px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            background-color: #fff;
+        }
+
+        .card-title {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .card-message {
+            font-size: 18px;
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .card-image {
+            width: auto;
+            height: auto;
+            margin-bottom: 30px;
+            border-radius: 10px; /* Add border-radius property */
+        }
+
+        .card-footer {
+            font-size: 14px;
+            color: #888;
+        }
+
+        .btn {
+            background-color: #7668e4;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            border-radius: 10px;
+            font-family: 'Hind Siliguri', sans-serif;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="card">
+        <h2 class="card-title">ঈদ মোবারক</h2>
+        <p class="card-message">আপনার ঈদ ভালো কাটুক আর আনন্দ ভরা হোক।</p>
+        <img src="https://img.freepik.com/free-vector/eid-al-adha-mubarak-religious-festival-yellow-watercolor-background-vector_1055-10611.jpg"
+             alt="Eid Image" class="card-image">
+        <p class="card-footer" id="cardFooter">প্রেরক, <span id="name">মাহমুদুল হাসান</span></p>
+        <button class="btn" onclick="updateSalami()">সালামি</button>
+    </div>
+</div>
+
+<script>
+    function generateRandomSalami() {
+        return Math.floor(Math.random() * 9000) + 1000; // Generate random 4-digit number
+    }
+
+    function updateSalami() {
+        Swal.fire({
+            title: 'আপনার নাম লিখুন',
+            input: 'text',
+            showCancelButton: true,
+            confirmButtonText: 'সমর্পণ করুন',
+            cancelButtonText: 'বাতিল করুন',
+            inputValidator: (value) => {
+                if (!value) {
+                    return 'নাম লিখুন';
+                }
+            }
+        }).then((result) => {
+            if (result.value) {
+                var name = result.value;
+                var salami = generateRandomSalami();
+
+                // Send the name to the PHP server using AJAX
+                var xhr = new XMLHttpRequest();
+                xhr.open('POST', 'users.php', true);
+                xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                xhr.onreadystatechange = function() {
+                    if (xhr.readyState === XMLHttpRequest.DONE) {
+                        if (xhr.status === 200) {
+                            // On success, update the salami and name elements
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'সালামি পেয়েছেন!',
+                                text: 'প্রিয় ' + name + ', আপনি ' + salami + ' টাকা সালামি পেয়েছেন।',
+                            });
+
+                            var salamiElement = document.getElementById("name");
+                            salamiElement.innerText = "সালামি: " + salami;
+
+                            var cardFooter = document.getElementById("cardFooter");
+                            cardFooter.innerText = "প্রেরক, " + name;
+                        } else {
+                            // On error, show an alert
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'সালামি পাঠানোর সময় ত্রুটি হয়েছে!',
+                                text: 'দুঃখিত, সালামি পাঠানোর সময় ত্রুটি হয়েছে। আবার চেষ্টা করুন।',
+                            });
+                        }
+                    }
+                };
+
+                // Prepare the data to send
+                var data = 'name=' + encodeURIComponent(name);
+
+                // Send the AJAX request
+                xhr.send(data);
+            }
+        });
+    }
+</script>
+</body>
+</html>
